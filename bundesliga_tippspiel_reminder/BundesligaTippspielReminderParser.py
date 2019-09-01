@@ -39,4 +39,4 @@ class BundesligaTippspielReminderParser(CommandParser):
         """
         :return: The available commands
         """
-        return []
+        return [Command("register", [("register", str)])]
