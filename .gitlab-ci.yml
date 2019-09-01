@@ -61,3 +61,10 @@ pypi_upload:
   tags: [docker]
   script:
     - pypi-upload
+
+build_test:
+  stage: test
+  tags: [privileged]
+  script:
+    - docker build -t bl-reminder . --no-cache
+    - docker run bl-reminder
