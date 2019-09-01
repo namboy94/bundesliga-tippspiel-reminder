@@ -16,7 +16,7 @@ RUN apt update && \
     cd bundesliga-tippspiel-reminder && \
     python setup.py install
 
-ENTRYPOINT /usr/local/bin/bundesliga-tippspiel-bot -h
+ENTRYPOINT /usr/local/bin/bundesliga-tippspiel-reminder -h
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
