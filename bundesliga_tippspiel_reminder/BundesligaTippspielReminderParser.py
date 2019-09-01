@@ -17,6 +17,26 @@ You should have received a copy of the GNU General Public License
 along with btr.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
+from typing import List
+from kudubot.parsing.Command import Command
+from kudubot.parsing.CommandParser import CommandParser
 
-if __name__ == "__main__":
-    pass
+
+class BundesligaTippspielReminderParser(CommandParser):
+    """
+    Parser for the bot that defines the available commands
+    """
+
+    @classmethod
+    def name(cls) -> str:
+        """
+        :return: The name of the bot
+        """
+        return "bundesliga-tippspiel-reminder"
+
+    @classmethod
+    def commands(cls) -> List[Command]:
+        """
+        :return: The available commands
+        """
+        return []
