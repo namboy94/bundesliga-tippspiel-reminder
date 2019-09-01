@@ -1,4 +1,4 @@
-Welcome to bundesliga_tippspiel_reminder's documentation!
+Welcome to bundesliga-tippspiel-reminder's documentation!
 =========================================================
 
 Contents:
