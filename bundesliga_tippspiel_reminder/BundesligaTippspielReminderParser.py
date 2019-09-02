@@ -40,6 +40,11 @@ class BundesligaTippspielReminderParser(CommandParser):
         :return: The available commands
         """
         return [
-            Command("register", [("key", str)]),
-            Command("rangliste", [])
+            Command("login", [("username", str), ("password", str)]),
+            Command("is_authorized", []),
+            Command("leaderboard", []),
+            # Command("reminder_state", []),
+            # Command("activate_reminder", []),
+            # Command("deactivate_reminder", []),
+            # Command("set_reminder_time", [("hours", int)]),
         ]

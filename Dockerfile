@@ -8,7 +8,7 @@ RUN apt update && \
     apt install locales -y && \
     locale-gen en_US.UTF-8 && update-locale en_US.UTF-8 && \
     apt install -y \
-    python3 python3-pip && \
+    python3 python3-pip python3-mysql && \
     rm -f /usr/bin/python && \
     rm -f /usr/bin/pip && \
     ln -s /usr/bin/python3 /usr/bin/python && \

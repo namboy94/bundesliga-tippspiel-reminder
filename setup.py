@@ -43,7 +43,8 @@ if __name__ == "__main__":
         install_requires=[
             "typing",
             "kudubot",
-            "bokkichat"
+            "bokkichat",
+            "requests"
         ],
         scripts=list(map(lambda x: os.path.join("bin", x), os.listdir("bin"))),
         include_package_data=True,

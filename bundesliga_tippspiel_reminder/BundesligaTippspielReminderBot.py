@@ -23,8 +23,11 @@ from bokkichat.entities.message.TextMessage import TextMessage
 from kudubot.Bot import Bot
 from kudubot.db.Address import Address as Address
 from kudubot.parsing.CommandParser import CommandParser
+from bundesliga_tippspiel_reminder.db.ApiKey import ApiKey
 from bundesliga_tippspiel_reminder.BundesligaTippspielReminderParser import \
     BundesligaTippspielReminderParser
+from bundesliga_tippspiel_reminder.api import api_request, is_authorized, \
+    get_api_key
 
 
 class BundesligaTippspielReminderBot(Bot):
@@ -38,7 +41,8 @@ class BundesligaTippspielReminderBot(Bot):
             parser: CommandParser,
             command: str,
             args: Dict[str, Any],
-            sender: Address, db_session: Session
+            sender: Address,
+            db_session: Session
     ):
         """
         Defines the behaviour of the bot when receiving a message
@@ -50,7 +54,12 @@ class BundesligaTippspielReminderBot(Bot):
         :param db_session: The database session to use
         :return: None
         """
-        pass
+        if command == "login":
+            self._handle_login(sender, args, db_session)
+        elif command == "is_authorized":
+            self._handle_is_authorized(sender, db_session)
+        elif command == "leaderboard":
+            self._handle_leaderboard(sender, db_session)
 
     @classmethod
     def name(cls) -> str:
@@ -65,3 +74,103 @@ class BundesligaTippspielReminderBot(Bot):
         :return: The parsers for the bot
         """
         return [BundesligaTippspielReminderParser()]
+
+    @classmethod
+    def extra_config_args(cls) -> List[str]:
+        """
+        :return: A list of additional settings parameters required for
+                 this bot. Will be stored in a separate extras.json file
+        """
+        return []
+
+    def _handle_login(
+            self,
+            sender: Address,
+            args: Dict[str, Any],
+            db_session: Session
+    ):
+        """
+        Handles a login command
+        :param sender: The sender of the message
+        :param args: The command arguments
+        :param db_session: The database session
+        :return: None
+        """
+
+        data = {"username": args["username"], "password": args["password"]}
+        response = api_request("api_key", "post", data)
+        print(response)
+
+        if response["status"] == "ok":
+            key = ApiKey(
+                kudubot_user=sender,
+                tippspiel_user=args["username"],
+                key=response["data"]["api_key"]
+            )
+            db_session.add(key)
+            db_session.commit()
+            reply = "Logged in successfully"
+        else:
+            reply = "Login unsuccessful"
+
+        reply = TextMessage(self.connection.address, sender, reply, "Login")
+        self.connection.send(reply)
+
+    def _handle_is_authorized(self, sender: Address, db_session: Session):
+        """
+        Handles an is_authorized command
+        :param sender: The sender of the message
+        :param db_session: The database session to use
+        :return: None
+        """
+        reply = "yes" if is_authorized(sender, db_session) else "no"
+        self.connection.send(TextMessage(
+            self.connection.address, sender, reply, "Authorized"
+        ))
+
+    def _authorization_check(self, sender: Address, db_session: Session) \
+            -> bool:
+        """
+        Checks whether or not the sender is authorized.
+        If the user is not authorized, a message is sent detailing this
+        :param sender: The sender to check
+        :param db_session: The database session to use
+        :return: True if authorized, False if not
+        """
+        authorized = is_authorized(sender, db_session)
+        if not authorized:
+            self.connection.send(TextMessage(
+                self.connection.address,
+                sender,
+                "Not authorized, use /login <username> <password> first",
+                "Not authorized"
+            ))
+        return authorized
+
+    def _handle_leaderboard(self, sender: Address, db_session: Session):
+        """
+        Handles a leaderboard command
+        :param sender: The sender of the message
+        :param db_session: The database session to use
+        :return: None
+        """
+        if not self._authorization_check(sender, db_session):
+            return
+
+        api_key = get_api_key(sender, db_session)
+        response = api_request("leaderboard", "get", {}, api_key)
+        print(response)
+        if response["status"] == "ok":
+            leaderboard = response["data"]["leaderboard"]
+            formatted = []
+            for i, (user, points) in enumerate(leaderboard):
+                formatted.append("{}: {} ({})".format(
+                    i + 1,
+                    user["username"],
+                    points
+                ))
+
+            reply = "\n".join(formatted)
+            self.connection.send(TextMessage(
+                self.connection.address, sender, reply, "Leaderboard"
+            ))
