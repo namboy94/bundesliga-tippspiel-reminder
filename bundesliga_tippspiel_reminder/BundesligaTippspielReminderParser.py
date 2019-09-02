@@ -43,8 +43,7 @@ class BundesligaTippspielReminderParser(CommandParser):
             Command("login", [("username", str), ("password", str)]),
             Command("is_authorized", []),
             Command("leaderboard", []),
-            # Command("reminder_state", []),
-            # Command("activate_reminder", []),
-            # Command("deactivate_reminder", []),
-            # Command("set_reminder_time", [("hours", int)]),
+            Command("reminder_state", []),
+            Command("activate_reminder", [("hours", int)]),
+            Command("deactivate_reminder", [])
         ]

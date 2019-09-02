@@ -21,9 +21,6 @@ import json
 import requests
 from base64 import b64encode
 from typing import Dict, Any, Optional
-from kudubot.db.Address import Address
-from sqlalchemy.orm import Session
-from bundesliga_tippspiel_reminder.db.ApiKey import ApiKey
 
 
 def api_request(
@@ -57,27 +54,14 @@ def api_request(
     ).text)
 
 
-def is_authorized(address: Address, db_session: Session) -> bool:
+def api_is_authorized(api_key: str) -> bool:
     """
-    Checks whether or not the address is authorized
-    :param address: The address to check
-    :param db_session: The database session to use
+    Checks whether or not an API key is authorized
+    :param api_key: The API key to check
     :return: True if authorized, False otherwise
     """
-    api_key = get_api_key(address, db_session)
     if api_key is None:
         return False
     else:
         resp = api_request("authorize", "get", {}, api_key)
         return resp["status"] == "ok"
-
-
-def get_api_key(address: Address, db_session: Session) -> Optional[str]:
-    """
-    Retrieves the API key for an address
-    :param address: The address for which to get the API key
-    :param db_session: The database session to use
-    :return: The API key, or None if no API key exists
-    """
-    api_key = db_session.query(ApiKey).filter_by(kudubot_user=address).first()
-    return None if api_key is None else api_key.key
