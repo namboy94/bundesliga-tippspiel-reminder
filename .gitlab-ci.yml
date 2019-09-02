@@ -3,6 +3,7 @@ stages:
   - test
   - stats
   - release
+  - deploy
 
 default:
   image: namboy94/ci-docker-environment:0.6.0
@@ -61,3 +62,16 @@ pypi_upload:
   tags: [docker]
   script:
     - pypi-upload
+
+run_bot:
+  stage: deploy
+  tags: [privileged]
+  only: [master, develop]
+  before_script: []
+  script:
+    - echo $TELEGRAM_API_KEY > telegram_api_key
+    - docker build -t bl-reminder . --no-cache
+    - docker stop bl-reminder-instance || true
+    - docker rm bl-reminder-instance || true
+    - docker run -d --restart always --name bl-reminder-instance
+      bl-reminder

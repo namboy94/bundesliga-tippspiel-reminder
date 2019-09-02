@@ -44,7 +44,7 @@ if __name__ == "__main__":
             "typing",
             "kudubot",
             "bokkichat",
-            "sqlalchemy"
+            "requests"
         ],
         scripts=list(map(lambda x: os.path.join("bin", x), os.listdir("bin"))),
         include_package_data=True,

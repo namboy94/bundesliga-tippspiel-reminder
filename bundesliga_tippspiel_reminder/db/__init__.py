@@ -16,13 +16,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with btr.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
-
-from bokkichat.connection.impl.TelegramBotConnection import \
-    TelegramBotConnection
-from kudubot.helper import cli_bot_start
-from bundesliga_tippspiel_reminder.BundesligaTippspielReminderBot import \
-    BundesligaTippspielReminderBot
-
-
-if __name__ == "__main__":
-    cli_bot_start(BundesligaTippspielReminderBot, TelegramBotConnection)

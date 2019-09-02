@@ -26,7 +26,7 @@ from sphinx.ext.autodoc import between
 # noinspection PyShadowingBuiltins
 copyright = '2010 Hermann Krumrey'
 author = 'Hermann Krumrey'
-project = 'bundesliga_tippspiel_reminder'
+project = 'bundesliga-tippspiel-reminder'
 
 extensions = ["sphinx.ext.autodoc"]
 master_doc = "index"
