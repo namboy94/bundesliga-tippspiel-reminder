@@ -72,4 +72,5 @@ run_bot:
     - echo $TELEGRAM_API_KEY > telegram_api_key
     - docker build -t bl-reminder . --no-cache
     - docker stop bl-reminder-instance || true
-    - docker run -d --rm --name bl-reminder-instance bl-reminder
+    - docker run -d --rm --restart always --name bl-reminder-instance
+      bl-reminder

@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with btr.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
+import time
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 from bokkichat.entities.message.TextMessage import TextMessage
@@ -145,7 +146,6 @@ class BundesligaTippspielReminderBot(Bot):
 
         data = {"username": args["username"], "password": args["password"]}
         response = api_request("api_key", "post", data)
-        print(response)
 
         if response["status"] == "ok":
             key = ApiKey(
@@ -183,7 +183,7 @@ class BundesligaTippspielReminderBot(Bot):
         :return: None
         """
         response = api_request("leaderboard", "get", {}, api_key)
-        print(response)
+
         if response["status"] == "ok":
             leaderboard = response["data"]["leaderboard"]
             formatted = []
@@ -229,7 +229,7 @@ class BundesligaTippspielReminderBot(Bot):
     ):
         hours = args["hours"]
         seconds = hours * 3600
-        if hours < 1 or hours >= 120:
+        if hours < 1 or hours > 120:
             self.connection.send(TextMessage(
                 self.connection.address, sender,
                 "Reminders can only be 1-120 hours", "Invalid Reminder Time"
@@ -272,3 +272,48 @@ class BundesligaTippspielReminderBot(Bot):
             self.connection.address, sender,
             "Reminder Deactivated", "Reminder Deactivated"
         ))
+
+    def run_in_bg(self):
+        """
+        Background thread that periodically checks if any reminders are due
+        :return: None
+        """
+        self.logger.info("Starting background thread")
+        while True:
+            self.logger.info("Checking for due reminders")
+
+            db_session = self.sessionmaker()
+            matches = None  # Refresh matches each iteration
+
+            for reminder in db_session.query(Reminder).all():
+                api_key = self._get_api_key(reminder.kudubot_user, db_session)
+
+                if not api_is_authorized(api_key):
+                    continue
+
+                if matches is None:
+                    resp = api_request("match", "get", {}, api_key)
+                    matches = resp["data"]["matches"]
+                bets = api_request("bet", "get", {}, api_key)["data"]["bets"]
+                due = reminder.get_due_matches(matches, bets)
+
+                if len(due) > 0:
+                    body = "Reminders for hk-tippspiel.com:\n\n"
+                    for match in due:
+                        body += "{} vs. {}\n".format(
+                            match["home_team"]["name"],
+                            match["away_team"]["name"]
+                        )
+                    msg = TextMessage(
+                        self.connection.address,
+                        reminder.kudubot_user,
+                        body,
+                        "Reminders"
+                    )
+                    self.connection.send(msg)
+                    last_match = max(due, key=lambda x: x["kickoff"])
+                    reminder.last_reminder = last_match["kickoff"]
+                    db_session.commit()
+
+            self.logger.info("Finished checking for due reminders")
+            time.sleep(3600)

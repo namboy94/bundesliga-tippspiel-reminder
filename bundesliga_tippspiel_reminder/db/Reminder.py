@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with btr.  If not, see <http://www.gnu.org/licenses/>.
 LICENSE"""
 
+from typing import List, Dict, Any
 from datetime import timedelta, datetime
 from kudubot.db import Base
 from sqlalchemy import Column, String, Integer, ForeignKey
@@ -79,3 +80,34 @@ class Reminder(Base):
         :return: The 'last_reminder' parameter as a datetime object
         """
         return datetime.strptime(self.last_reminder, "%Y-%m-%d:%H-%M-%S")
+
+    def get_due_matches(
+            self,
+            matches: List[Dict[str, Any]],
+            bets: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieves any due matches for the reminder settings
+        :param matches: All matches
+        :param bets: All bets of the user
+        :return: A list of due matches
+        """
+        now = datetime.utcnow()
+        start = max(now, self.last_reminder_datetime)
+        start_str = start.strftime("%Y-%m-%d:%H-%M-%S")
+        then = now + self.reminder_time_delta
+        then_str = then.strftime("%Y-%m-%d:%H-%M-%S")
+
+        due_matches = list(filter(
+            lambda x: start_str < x["kickoff"] < then_str,
+            matches
+        ))
+
+        betted_match_ids = list(map(lambda x: x["match_id"], bets))
+
+        to_remind = list(filter(
+            lambda x: x["id"] not in betted_match_ids,
+            due_matches
+        ))
+
+        return to_remind
