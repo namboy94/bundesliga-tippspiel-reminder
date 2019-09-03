@@ -73,8 +73,8 @@ run_bot:
     - docker stop bl-reminder-instance || true
     - docker rm bl-reminder-instance || true
     - echo $TELEGRAM_API_KEY | docker run --rm -i -v
-      /home/hermann/bl-remind:/root/.config/bundesliga-tippspiel-reminder
+      /home/hermann/config/blremind:/root/.config/bundesliga-tippspiel-reminder
       bl-reminder --initialize
     - docker run -d --restart always --name bl-reminder-instance -v
-      /home/hermann/bl-remind:/root/.config/bundesliga-tippspiel-reminder
-      bl-reminder
+      /home/hermann/config/blremind:/root/.config/bundesliga-tippspiel-reminder
+      bl-reminder -v
