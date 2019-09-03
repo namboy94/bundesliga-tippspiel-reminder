@@ -316,4 +316,5 @@ class BundesligaTippspielReminderBot(Bot):
                     db_session.commit()
 
             self.logger.info("Finished checking for due reminders")
+            self.sessionmaker.remove()
             time.sleep(3600)

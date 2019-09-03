@@ -15,9 +15,9 @@ RUN apt update && \
     ln -s /usr/bin/pip3 /usr/bin/pip && \
     cd bundesliga-tippspiel-reminder && \
     python setup.py install && \
-    cat telegram_api_key | bundesliga-tippspiel-reminder --initialize
+    mkdir ~/.config/bundesliga-tippspiel-reminder -p
 
-ENTRYPOINT /usr/local/bin/bundesliga-tippspiel-reminder
+ENTRYPOINT ["/usr/local/bin/bundesliga-tippspiel-reminder"]
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
