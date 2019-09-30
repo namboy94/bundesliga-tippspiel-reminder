@@ -39,7 +39,7 @@ def api_request(
     """
     url = "https://hk-tippspiel.com/api/v2/" + endpoint
 
-    headers = {}
+    headers = {}  # type: Dict[str, str]
     if api_key is not None:
         encoded = b64encode(api_key.encode("utf-8")).decode("utf-8")
         headers = {
@@ -54,7 +54,7 @@ def api_request(
     ).text)
 
 
-def api_is_authorized(api_key: str) -> bool:
+def api_is_authorized(api_key: Optional[str]) -> bool:
     """
     Checks whether or not an API key is authorized
     :param api_key: The API key to check
