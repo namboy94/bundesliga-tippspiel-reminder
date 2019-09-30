@@ -6,7 +6,7 @@ stages:
   - deploy
 
 default:
-  image: namboy94/ci-docker-environment:0.6.0
+  image: namboy94/ci-docker-environment:0.8.0
   before_script:
     - echo "$SERVER_ACCESS_KEY" > ~/.ssh/id_rsa
     - chmod 0600 ~/.ssh/id_rsa
@@ -34,6 +34,12 @@ unittest:
   tags: [docker]
   script:
     - python-unittest
+
+type_check:
+  stage: test
+  tags: [docker]
+  script:
+    - python-static-type-check
 
 gitstats:
   stage: stats

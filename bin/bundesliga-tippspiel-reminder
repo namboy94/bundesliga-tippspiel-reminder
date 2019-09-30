@@ -20,9 +20,14 @@ LICENSE"""
 from bokkichat.connection.impl.TelegramBotConnection import \
     TelegramBotConnection
 from kudubot.helper import cli_bot_start
+from bundesliga_tippspiel_reminder import sentry_dsn
 from bundesliga_tippspiel_reminder.BundesligaTippspielReminderBot import \
     BundesligaTippspielReminderBot
 
 
 if __name__ == "__main__":
-    cli_bot_start(BundesligaTippspielReminderBot, TelegramBotConnection)
+    cli_bot_start(
+        BundesligaTippspielReminderBot,
+        TelegramBotConnection,
+        sentry_dsn
+    )

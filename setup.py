@@ -44,7 +44,9 @@ if __name__ == "__main__":
             "typing",
             "kudubot",
             "bokkichat",
-            "requests"
+            "requests",
+            "sqlalchemy",
+            "sentry-sdk"
         ],
         scripts=list(map(lambda x: os.path.join("bin", x), os.listdir("bin"))),
         include_package_data=True,
