@@ -1,3 +1,5 @@
+V 0.3.0:
+  - Fixed authorization method
 V 0.2.2:
   - Added static type checking
 V 0.2.1:
