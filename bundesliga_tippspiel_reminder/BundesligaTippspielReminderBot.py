@@ -78,7 +78,7 @@ class BundesligaTippspielReminderBot(Bot):
         :param db_session: The database session to use
         :return: True if authorized, False otherwise
         """
-        return self._get_api_key(address, db_session) is None
+        return self._get_api_key(address, db_session) is not None
 
     @classmethod
     def unauthorized_message(cls) -> str:
